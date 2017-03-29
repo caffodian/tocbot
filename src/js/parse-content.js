@@ -35,6 +35,7 @@ module.exports = function parseContent(options) {
     var obj = {
       id: heading.id,
       children: [],
+      className: heading.className,
       nodeName: heading.nodeName,
       headingLevel: getHeadingLevel(heading),
       textContent: heading.textContent.trim()
