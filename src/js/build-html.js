@@ -67,6 +67,7 @@ module.exports = function(options) {
   function createLink(data) {
     var item = document.createElement('li');
     var a = document.createElement('a');
+    var classString;
     if (options.listItemClass) {
       item.setAttribute('class', options.listItemClass);
     }
@@ -78,12 +79,16 @@ module.exports = function(options) {
       // Default behavior.
       a.textContent = data.textContent;
     }
+    classString = options.linkClass
+      + SPACE_CHAR + 'node-name--' + data.nodeName
+      + SPACE_CHAR + options.extraLinkClasses;
+    if (options.copyListItemClassesFromHeading && data.className) {
+      classString += SPACE_CHAR + data.className;
+    }
     // Property for smooth-scroll.
     a.setAttribute('data-scroll', '');
     a.setAttribute('href', '#' + data.id);
-    a.setAttribute('class', options.linkClass
-      + SPACE_CHAR + 'node-name--' + data.nodeName
-      + SPACE_CHAR + options.extraLinkClasses);
+    a.setAttribute('class', classString);
     item.appendChild(a);
     return item;
   }
