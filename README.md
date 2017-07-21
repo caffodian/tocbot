@@ -1,8 +1,8 @@
-<h1 class="display--none">
+<h1 class="dn">
 <a href="http://tscanlin.github.io/tocbot">Tocbot</a>
-<a href="https://travis-ci.org/tscanlin/tocbot" target="_blank"><img src="https://travis-ci.org/tscanlin/tocbot.svg?branch=master" alt="travis-ci" /></a>
 </h1>
 
+<a class="no-decoration" href="https://travis-ci.org/tscanlin/tocbot" target="_blank"><img src="https://travis-ci.org/tscanlin/tocbot.svg?branch=master" alt="travis-ci" /></a>
 
 Tocbot builds a [table of contents](https://en.wikipedia.org/wiki/Table_of_contents) (TOC) from headings in an HTML document. This is useful for documentation websites or long markdown pages because it makes them easier to navigate. This library was inspired by [Tocify](http://gregfranko.com/jquery.tocify.js/), the main difference is that Tocbot uses native DOM methods and avoids the jQuery & jQuery UI dependencies.
 
@@ -53,7 +53,7 @@ If you installed it with npm and use sass / postcss you might try importing the 
 
 Initialize the script
 
-```javascript
+```js
 tocbot.init({
   // Where to render the table of contents.
   tocSelector: '.js-toc',
@@ -63,6 +63,8 @@ tocbot.init({
   headingSelector: 'h1, h2, h3',
 });
 ```
+
+**NOTE:** Make sure headings have id attributes, tocbot and your browser needs these to make hashes jump to the proper heading, some markdown libraries (like [marked](https://github.com/chjj/marked)) already do this for you.
 
 If content in the div has changed then trigger a refresh (optionally with new options).
 
@@ -81,11 +83,27 @@ If you'd like to add your page to this list open a pull request.
 
 ## Requirements
 
-This library uses **vanilla JavaScript**. It is less than 400 bytes of CSS and about 4Kb of JavaScript (minified and gzipped). The only dependency this script has is [Smooth Scroll](https://github.com/cferdinandi/smooth-scroll) (which has no dependencies).
+This library uses **vanilla JavaScript**. It is less than 350 bytes of CSS and about 3.6Kb of JavaScript (minified and gzipped). The only dependency this script has is [zenscroll](https://github.com/zengabor/zenscroll) (which is small and has no dependencies). **NOTE:** to exclude anchor elements from smooth scrolling, add the class `noZensmooth` ([source](https://github.com/zengabor/zenscroll#16-exclude-a-link-from-the-automatic-smooth-scrolling)).
 
-This script works in **all modern browsers and IE 7+**.
+This script works in **all modern browsers and IE 9+**.
 
 Make sure rendered headings have id attributes, some markdown libraries (like [marked](https://github.com/chjj/marked)) already do this.
+
+### Fixed headers
+
+To handle anchor links properly when you have a fixed header, I recommend using CSS similar to the following:
+
+```css
+h1::before, h2::before, h3::before, h4::before, h5::before, h6::before {
+    display: block;
+    content: " ";
+    height: 60px;
+    margin-top: -60px;
+    visibility: hidden;
+}
+```
+
+This is better than javascript solutions since it will work when javascript is disabled.
 
 
 ## API
@@ -99,7 +117,6 @@ tocSelector: '.js-toc',
 contentSelector: '.js-toc-content',
 // Which headings to grab inside of the contentSelector element.
 headingSelector: 'h1, h2, h3',
-
 // Headings that match the ignoreSelector will be skipped.
 ignoreSelector: '.js-toc-ignore',
 // Main class to add to links.
@@ -126,14 +143,13 @@ listItemClass: 'toc-list-item',
 // The sections that are hidden will open
 // and close as you scroll to headings within them.
 collapseDepth: 0,
-// smooth-scroll options object, see docs at:
-// https://github.com/cferdinandi/smooth-scroll
-smoothScrollOptions: {
-  easing: 'easeInOutCubic',
-  offset: 0,
-  speed: 300 // animation duration.
-},
-// Headings offset between the headings and the top of the document.
+// Smooth scrolling enabled.
+smoothScroll: true,
+// Smooth scroll duration.
+smoothScrollDuration: 420,
+// Callback for scroll end (requires: smoothScroll).
+scrollEndCallback: function (e) {},
+// Headings offset between the headings and the top of the document (this is meant for minor adjustments).
 headingsOffset: 0,
 // Timeout between events firing to make sure it's
 // not too rapid (for performance reasons).
@@ -183,114 +199,7 @@ tocbot.refresh()
 ## Roadmap
 
 - More tests
-- Option for changing the url hash on scroll
 - React.js support
-
-
-## Changelog
-
-
-### v2.3.1
-
-#### Fixed
-- [patch] Fix for clicking svgs to not throw an exception. [#33](https://github.com/tscanlin/tocbot/issues/33)
-
-
-### v2.3.0
-
-#### Changed
-- [patch] Fix for proper header not being selected due to sub-pixel rounding issues. [#31](https://github.com/tscanlin/tocbot/pull/31)
-- [dev] Updated test commands to be able to selectively run tests and debug them more easily. [#29](https://github.com/tscanlin/tocbot/pull/29)
-
-
-### v2.2.2
-
-#### Changed
-- [patch] Removed updateUrl option from docs since it doesn't work, see: [smooth-scroll #283](https://github.com/cferdinandi/smooth-scroll/pull/283).
-
-
-### v2.2.1
-
-#### Added
-- [patch] Made bower.json reference unminified file.
-
-
-### v2.2.0
-
-#### Added
-- [minor] Added bower.json to provide bower support.
-
-
-### v2.1.5
-
-#### Added
-- [patch] Added `overflow-y: auto` to the `.toc selector so that it scrolls` (#17).
-- [dev] Added to deploy script to commit /dist files to master.
-- [dev] Added to package.json for cdnjs.
-
-
-### v2.1.4
-
-#### Added
-- [patch] `includeHtml` option to mirror markup from the headings in the TOC (#14).
-- [patch] `listItemClass` will be omitted if an empty string in passed.
-- [dev] `test:watch` command.
-- [dev] more tests.
-
-
-### v2.1.3
-
-#### Added
-- [patch] `listItemClass` option to set classes on list items (#12).
-
-
-### v2.1.2
-
-#### Fixed
-- [patch] prevent errors from being thrown when elements are not present and add tests.
-
-
-### v2.1.1
-
-#### Changed
-- [patch] update file size estimates in the docs.
-- [patch] switch from throwing errors to using console.warn.
-
-
-### v2.1
-
-#### Added
-- [minor] add `positionFixedSelector` option to specify the element to add a fixed position class to.
-- [dev] use travis-ci for builds.
-
-
-### v2.0
-
-#### Added
-- [major] smooth-scroll is included by default now.
-- [patch] throttling support to improve performance, also the `throttleTimeout` option.
-- [patch] new "try it now" option on documentation site.
-
-#### Changed
-- [minor] broke up scss files and separate tocbot styles better.
-- [minor] default option for `contentSelector` to be `.js-toc-content`.
-- [minor] default option for `ignoreSelector` to be `.js-toc-ignore`.
-- [minor] default option for `collapsibleClass` to be `.is-collapsible`.
-- [patch] reorder `default-options.js`.
-- [patch] update documentation.
-
-#### Removed
-- [patch] dependency on classList to improve browser support.
-
-#### Fixed
-- [minor] new and improved tests using jsdom.
-- [dev] switched from gulp to npm scripts.
-- [dev] switched from browserify to webpack.
-- [dev] switched from swig to react for building the documentation.
-
-
-### v1.0
-- First published source code.
 
 
 ## Contributing
@@ -305,12 +214,6 @@ If you want to open a pull request just fork the repo but please make sure all t
 #### All tests
 ```bash
 npm run test
-```
-
-#### Specific tests
-To filter tests by `describe` or `it` description:
-```bash
-TEST_NAME="some string that appears in the test description" npm run test
 ```
 
 #### With debugger
@@ -328,7 +231,7 @@ npm install node-inspector
 
 Now that node-inspector is installed, you can run the tests!
 ```
-TEST_NAME="whatever, this is optional" npm run test:debug
+npm run test:debug
 ```
 
 ## Steps to publish
@@ -337,6 +240,7 @@ TEST_NAME="whatever, this is optional" npm run test:debug
 - run `npm version <patch|minor|major>`
 - Update readme.md with notes
 - Merge the pull request
+- commit dist/
 - run `npm publish`
 - make release on github
 

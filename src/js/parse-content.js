@@ -5,16 +5,16 @@
  * @author Tim Scanlin
  */
 
-module.exports = function parseContent(options) {
-  var reduce = [].reduce;
+module.exports = function parseContent (options) {
+  var reduce = [].reduce
 
   /**
    * Get the last item in an array and return a reference to it.
    * @param {Array} array
    * @return {Object}
    */
-  function getLastItem(array) {
-    return array[array.length - 1];
+  function getLastItem (array) {
+    return array[array.length - 1]
   }
 
   /**
@@ -22,8 +22,8 @@ module.exports = function parseContent(options) {
    * @param {HTMLElement} heading
    * @return {Number}
    */
-  function getHeadingLevel(heading) {
-    return +heading.nodeName.split('H').join('');
+  function getHeadingLevel (heading) {
+    return +heading.nodeName.split('H').join('')
   }
 
   /**
@@ -31,7 +31,7 @@ module.exports = function parseContent(options) {
    * @param {HTMLElement} heading
    * @return {Object}
    */
-  function getHeadingObject(heading) {
+  function getHeadingObject (heading) {
     var obj = {
       id: heading.id,
       children: [],
@@ -39,13 +39,13 @@ module.exports = function parseContent(options) {
       nodeName: heading.nodeName,
       headingLevel: getHeadingLevel(heading),
       textContent: heading.textContent.trim()
-    };
-
-    if (options.includeHtml) {
-      obj.childNodes = heading.childNodes;
     }
 
-    return obj;
+    if (options.includeHtml) {
+      obj.childNodes = heading.childNodes
+    }
+
+    return obj
   }
 
   /**
@@ -54,30 +54,30 @@ module.exports = function parseContent(options) {
    * @param {Array} nest
    * @return {Array}
    */
-  function addNode(node, nest) {
-    var obj = getHeadingObject(node);
-    var level = getHeadingLevel(node);
-    var array = nest;
-    var lastItem = getLastItem(array);
+  function addNode (node, nest) {
+    var obj = getHeadingObject(node)
+    var level = getHeadingLevel(node)
+    var array = nest
+    var lastItem = getLastItem(array)
     var lastItemLevel = lastItem
       ? lastItem.headingLevel
-      : 0;
-    var counter = level - lastItemLevel;
+      : 0
+    var counter = level - lastItemLevel
 
     while (counter > 0) {
-      lastItem = getLastItem(array);
+      lastItem = getLastItem(array)
       if (lastItem && lastItem.children !== undefined) {
-        array = lastItem.children;
+        array = lastItem.children
       }
-      counter--;
+      counter--
     }
 
     if (level >= options.collapseDepth) {
-      obj.isCollapsed = true;
+      obj.isCollapsed = true
     }
 
-    array.push(obj);
-    return array;
+    array.push(obj)
+    return array
   }
 
   /**
@@ -86,20 +86,20 @@ module.exports = function parseContent(options) {
    * @param {Array} headingSelector
    * @return {Array}
    */
-  function selectHeadings(contentSelector, headingSelector) {
-    var selectors = headingSelector;
+  function selectHeadings (contentSelector, headingSelector) {
+    var selectors = headingSelector
     if (options.ignoreSelector) {
       selectors = headingSelector.split(',')
-        .map(function mapSelectors(selector) {
-          return selector.trim() + ':not(' + options.ignoreSelector + ')';
-        });
+        .map(function mapSelectors (selector) {
+          return selector.trim() + ':not(' + options.ignoreSelector + ')'
+        })
     }
     try {
       return document.querySelector(contentSelector)
-        .querySelectorAll(selectors);
+        .querySelectorAll(selectors)
     } catch (e) {
       console.warn('Element not found: ' + contentSelector); // eslint-disable-line
-      return null;
+      return null
     }
   }
 
@@ -108,19 +108,19 @@ module.exports = function parseContent(options) {
    * @param {Array} headingsArray
    * @return {Object}
    */
-  function nestHeadingsArray(headingsArray) {
-    return reduce.call(headingsArray, function reducer(prev, curr) {
-      var currentHeading = getHeadingObject(curr);
+  function nestHeadingsArray (headingsArray) {
+    return reduce.call(headingsArray, function reducer (prev, curr) {
+      var currentHeading = getHeadingObject(curr)
 
-      addNode(currentHeading, prev.nest);
-      return prev;
+      addNode(currentHeading, prev.nest)
+      return prev
     }, {
       nest: []
-    });
+    })
   }
 
   return {
     nestHeadingsArray: nestHeadingsArray,
     selectHeadings: selectHeadings
-  };
-};
+  }
+}
