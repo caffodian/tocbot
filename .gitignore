@@ -1,7 +1,11 @@
 .git
 .publish
+.next
 .DS_Store
-build/
-dist/
+_site/
+site/
+static/js/*
+static/css/*
 node_modules/
 npm-debug.*
+pages/_*.json
