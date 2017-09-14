@@ -199,7 +199,7 @@ tocbot.refresh()
 ## Roadmap
 
 - More tests
-- React.js support
+- React.js support (make react support native without direct dom manipulation)
 
 
 ## Contributing
@@ -230,7 +230,7 @@ npm install node-inspector
 ```
 
 Now that node-inspector is installed, you can run the tests!
-```
+```bash
 npm run test:debug
 ```
 

@@ -19,9 +19,9 @@ function Hero (props) {
                     {link.text}
                   </a>
                 ) : (
-                  <Link prefetch href={link.href} key={i}>
+                  <Link href={link.href} key={i}>
                     <a className='dib f6 white no-underline pa1 ma1'
-                      href={link.href} key={i}>
+                      href={link.href}>
                       {link.text}
                     </a>
                   </Link>
